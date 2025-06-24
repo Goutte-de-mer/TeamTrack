@@ -17,4 +17,21 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-module.exports = { authenticateToken };
+const requireAuth = (req, res, next) => {
+  try {
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
+
+    if (!token) return res.status(401).json({ error: "Token manquant" });
+
+    jwt.verify(token, process.env.TOKEN_SECRET);
+    next();
+  } catch (error) {
+    return res.status(403).json({
+      msg: "Token invalide",
+      error: error.message,
+    });
+  }
+};
+
+module.exports = { authenticateToken, requireAuth };
