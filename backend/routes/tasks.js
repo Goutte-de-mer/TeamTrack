@@ -7,6 +7,7 @@ const {
   createTaskValidations,
   validateIdParam,
   updateTaskValidations,
+  statusValidations,
 } = require("../middlewares/validations");
 
 router.post(
@@ -85,6 +86,22 @@ router.patch(
       );
 
       return res.status(200).json(updatedTask);
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
+  }
+);
+
+router.patch(
+  "/update/status",
+  authenticateToken,
+  statusValidations,
+  handleValidationErros,
+  async (req, res) => {
+    try {
+      const userId = req.user.userId;
+      const updatedStatus = await taskController.updateStatus(userId, req.body);
+      return res.status(200).json(updatedStatus);
     } catch (error) {
       return res.status(500).json({ error: error.message });
     }

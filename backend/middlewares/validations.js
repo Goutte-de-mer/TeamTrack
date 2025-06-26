@@ -185,6 +185,15 @@ const updateTaskValidations = [
     .isString()
     .isMongoId()
     .withMessage("ID invalide"),
+  body("taskId").isString().isMongoId().withMessage("ID projet invalide"),
+];
+
+const statusValidations = [
+  body("status")
+    .trim()
+    .isIn(["À faire", "En cours", "Terminé"])
+    .withMessage("Statut invalide."),
+  body("taskId").isString().isMongoId().withMessage("ID projet invalide"),
 ];
 const validateIdParam = [param("id").isMongoId().withMessage("ID invalide")];
 
@@ -208,4 +217,5 @@ module.exports = {
   updateProjectValidations,
   createTaskValidations,
   updateTaskValidations,
+  statusValidations,
 };

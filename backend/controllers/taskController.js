@@ -107,3 +107,19 @@ exports.updateTask = async (title, description, assignedTo, userId, taskId) => {
 
   return task;
 };
+
+exports.updateStatus = async (userId, { status, taskId }) => {
+  const newStatus = await Task.findOneAndUpdate(
+    {
+      _id: taskId,
+      $or: [{ user: userId }, { assignedTo: userId }],
+    },
+    { $set: { status: status } },
+    { new: true, runValidators: true, select: "status -_id" }
+  );
+  if (!newStatus) {
+    throw new Error("Tâche introuvable ou accès refusé");
+  }
+
+  return newStatus;
+};
