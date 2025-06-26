@@ -1,5 +1,6 @@
-const { body, validationResult } = require("express-validator");
+const { body, param, validationResult } = require("express-validator");
 const User = require("../db/models/User");
+const mongoose = require("mongoose");
 
 const registerValidations = [
   body("userName")
@@ -85,6 +86,64 @@ const updateValidations = [
     }),
 ];
 
+const createProjectValidations = [
+  body("title")
+    .trim()
+    .isLength({ min: 3, max: 50 })
+    .withMessage("Le titre doit contenir entre 3 et 50 caractères"),
+  body("description")
+    .optional()
+    .trim()
+    .isLength({ max: 500 })
+    .withMessage("La description ne peut pas dépasser 500 caractères")
+    .escape(),
+  body("collaborators")
+    .optional()
+    .isArray()
+    .withMessage("Collaborators doit être un tableau")
+    .custom(async (collaborators) => {
+      for (const id of collaborators) {
+        if (typeof id !== "string") {
+          throw new Error(`L'ID doit être une chaîne de caractères`);
+        }
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+          throw new Error(`ID invalide`);
+        }
+      }
+      return true;
+    }),
+];
+
+const updateProjectValidations = [
+  body("projectId").isMongoId().withMessage("ID projet invalide"),
+  body("title")
+    .optional()
+    .trim()
+    .isLength({ min: 3, max: 50 })
+    .withMessage("Le titre doit contenir entre 3 et 50 caractères"),
+  body("description")
+    .optional()
+    .trim()
+    .isLength({ min: 1, max: 500 })
+    .withMessage("La description doit contenir entre 1 et 500 caractères")
+    .escape(),
+  body("collaborators")
+    .optional()
+    .isArray()
+    .withMessage("Collaborators doit être un tableau")
+    .custom(async (collaborators) => {
+      for (const id of collaborators) {
+        if (typeof id !== "string") {
+          throw new Error(`L'ID doit être une chaîne de caractères`);
+        }
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+          throw new Error(`ID invalide`);
+        }
+      }
+      return true;
+    }),
+];
+
 const handleValidationErros = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -95,9 +154,16 @@ const handleValidationErros = (req, res, next) => {
   next();
 };
 
+const validateProjectId = [
+  param("id").isMongoId().withMessage("ID projet invalide"),
+];
+
 module.exports = {
   registerValidations,
   handleValidationErros,
   loginValidations,
   updateValidations,
+  createProjectValidations,
+  validateProjectId,
+  updateProjectValidations,
 };

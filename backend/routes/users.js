@@ -7,7 +7,16 @@ const {
   handleValidationErros,
   updateValidations,
 } = require("../middlewares/validations");
-const { authenticateToken } = require("../middlewares/auth");
+const { authenticateToken, requireAuth } = require("../middlewares/auth");
+
+router.get("/", requireAuth, async (req, res) => {
+  try {
+    const users = await userController.getAllUsers();
+    return res.status(200).json(users);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
 
 router.post(
   "/register",

@@ -2,6 +2,10 @@ const User = require("../db/models/User");
 const bcrypt = require("bcrypt");
 const { generateToken } = require("../utils/generateJwt");
 
+exports.getAllUsers = async () => {
+  return await User.find();
+};
+
 exports.registerUser = async ({ userName, email, password }) => {
   const plainPasswd = password;
   const hashedPasswd = await bcrypt.hash(plainPasswd, 12);
