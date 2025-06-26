@@ -144,6 +144,30 @@ const updateProjectValidations = [
     }),
 ];
 
+const createTaskValidations = [
+  body("title")
+    .trim()
+    .isLength({ min: 3, max: 50 })
+    .withMessage("Le titre doit contenir entre 3 et 50 caractères"),
+  body("description")
+    .optional()
+    .trim()
+    .isLength({ min: 1, max: 500 })
+    .withMessage("La description doit contenir entre 1 et 500 caractères")
+    .escape(),
+  body("assignedTo")
+    .optional()
+    .isString()
+    .isMongoId()
+    .withMessage("ID projet invalide"),
+  body("status")
+    .optional()
+    .trim()
+    .isIn(["À faire", "En cours", "Terminé"])
+    .withMessage("Statut invalide."),
+  body("projectId").isString().isMongoId().withMessage("ID projet invalide"),
+];
+
 const handleValidationErros = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -166,4 +190,5 @@ module.exports = {
   createProjectValidations,
   validateProjectId,
   updateProjectValidations,
+  createTaskValidations,
 };

@@ -7,7 +7,7 @@ const {
   validateProjectId,
   updateProjectValidations,
 } = require("../middlewares/validations");
-const { authenticateToken, requireAuth } = require("../middlewares/auth");
+const { authenticateToken } = require("../middlewares/auth");
 
 router.post(
   "/new",

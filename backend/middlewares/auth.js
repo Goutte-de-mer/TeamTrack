@@ -5,7 +5,7 @@ const authenticateToken = (req, res, next) => {
   const token = authHeader && authHeader.split(" ")[1];
 
   if (!token) {
-    return res.status(401).json({ error: "Token manquant" });
+    return res.status(401).json({ error: "Vous devez être connecté" });
   }
 
   jwt.verify(token, process.env.TOKEN_SECRET, (err, user) => {

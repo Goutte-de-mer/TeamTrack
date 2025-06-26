@@ -8,10 +8,15 @@ const taskSchema = new mongoose.Schema({
   description: String,
   status: {
     type: String,
-    enum: ["à faire", "en cours", "terminé"],
-    default: "à faire",
+    enum: ["À faire", "En cours", "Terminé"],
+    default: "À faire",
   },
   user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  assignedTo: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
