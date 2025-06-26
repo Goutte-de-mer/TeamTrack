@@ -44,3 +44,28 @@ exports.createTask = async (
 
   return populatedTask;
 };
+
+exports.getTaskById = async (userId, taskId) => {
+  const task = await Task.findOne({
+    _id: taskId,
+    $or: [{ user: userId }, { assignedTo: userId }],
+  }).populate(["user", "assignedTo"]);
+
+  if (!task) {
+    throw new Error("La tâche n'existe pas ou vous n'avez pas les droits");
+  }
+
+  return task;
+};
+
+exports.deleteTaskById = async (userId, taskId) => {
+  const result = await Task.deleteOne({
+    _id: taskId,
+    user: userId,
+  });
+
+  if (result.deletedCount === 0) {
+    throw new Error("Tâche introuvable ou accès refusé");
+  }
+  return { message: "Tâche supprimée avec succès" };
+};

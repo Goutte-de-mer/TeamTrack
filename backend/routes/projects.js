@@ -4,7 +4,7 @@ const projectController = require("../controllers/projectController");
 const {
   handleValidationErros,
   createProjectValidations,
-  validateProjectId,
+  validateIdParam,
   updateProjectValidations,
 } = require("../middlewares/validations");
 const { authenticateToken } = require("../middlewares/auth");
@@ -38,7 +38,7 @@ router.get("/all", authenticateToken, async (req, res) => {
 router.get(
   "/:id",
   authenticateToken,
-  validateProjectId,
+  validateIdParam,
   handleValidationErros,
   async (req, res) => {
     try {
@@ -56,7 +56,7 @@ router.get(
 router.delete(
   "/:id",
   authenticateToken,
-  validateProjectId,
+  validateIdParam,
   handleValidationErros,
   async (req, res) => {
     try {

@@ -178,9 +178,7 @@ const handleValidationErros = (req, res, next) => {
   next();
 };
 
-const validateProjectId = [
-  param("id").isMongoId().withMessage("ID projet invalide"),
-];
+const validateIdParam = [param("id").isMongoId().withMessage("ID invalide")];
 
 module.exports = {
   registerValidations,
@@ -188,7 +186,7 @@ module.exports = {
   loginValidations,
   updateValidations,
   createProjectValidations,
-  validateProjectId,
+  validateIdParam,
   updateProjectValidations,
   createTaskValidations,
 };
