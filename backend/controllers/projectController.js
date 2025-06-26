@@ -35,7 +35,7 @@ exports.getProjectById = async (userId, projectId) => {
   }
 
   const tasks = await Task.find({ project: project._id })
-    .populate("user assignedTo", "userName email")
+    .populate("user", "userName email")
     .sort({ createdAt: -1 });
 
   return { project, tasks };

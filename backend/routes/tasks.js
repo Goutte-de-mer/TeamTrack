@@ -6,6 +6,7 @@ const {
   handleValidationErros,
   createTaskValidations,
   validateIdParam,
+  updateTaskValidations,
 } = require("../middlewares/validations");
 
 router.post(
@@ -55,6 +56,35 @@ router.delete(
 
       const result = await taskController.deleteTaskById(userId, taskId);
       return res.status(200).json(result);
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
+  }
+);
+
+router.patch(
+  "/update",
+  authenticateToken,
+  updateTaskValidations,
+  handleValidationErros,
+  async (req, res) => {
+    try {
+      const userId = req.user.userId;
+      const { title, description, assignedTo, taskId } = req.body;
+
+      if (!title && !description && !assignedTo) {
+        return res.status(400).json({ error: "Au moins un champs est requis" });
+      }
+
+      const updatedTask = await taskController.updateTask(
+        title,
+        description,
+        assignedTo,
+        userId,
+        taskId
+      );
+
+      return res.status(200).json(updatedTask);
     } catch (error) {
       return res.status(500).json({ error: error.message });
     }

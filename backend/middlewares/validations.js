@@ -168,6 +168,26 @@ const createTaskValidations = [
   body("projectId").isString().isMongoId().withMessage("ID projet invalide"),
 ];
 
+const updateTaskValidations = [
+  body("title")
+    .optional()
+    .trim()
+    .isLength({ min: 3, max: 50 })
+    .withMessage("Le titre doit contenir entre 3 et 50 caractères"),
+  body("description")
+    .optional()
+    .trim()
+    .isLength({ min: 1, max: 500 })
+    .withMessage("La description doit contenir entre 1 et 500 caractères")
+    .escape(),
+  body("assignedTo")
+    .optional()
+    .isString()
+    .isMongoId()
+    .withMessage("ID invalide"),
+];
+const validateIdParam = [param("id").isMongoId().withMessage("ID invalide")];
+
 const handleValidationErros = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -178,8 +198,6 @@ const handleValidationErros = (req, res, next) => {
   next();
 };
 
-const validateIdParam = [param("id").isMongoId().withMessage("ID invalide")];
-
 module.exports = {
   registerValidations,
   handleValidationErros,
@@ -189,4 +207,5 @@ module.exports = {
   validateIdParam,
   updateProjectValidations,
   createTaskValidations,
+  updateTaskValidations,
 };

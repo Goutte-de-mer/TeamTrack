@@ -69,3 +69,41 @@ exports.deleteTaskById = async (userId, taskId) => {
   }
   return { message: "Tâche supprimée avec succès" };
 };
+
+exports.updateTask = async (title, description, assignedTo, userId, taskId) => {
+  // 1. Récupère tâche + projet populé
+  const task = await Task.findOne({ _id: taskId, user: userId }).populate({
+    path: "project",
+    populate: {
+      path: "owner collaborators",
+      select: "_id",
+    },
+  });
+
+  if (!task) {
+    throw new Error("Tâche introuvable ou accès refusé");
+  }
+
+  // 2. Vérifie assignedTo si fourni
+  if (assignedTo !== undefined) {
+    const authorizedUserIds = [
+      task.project.owner._id.toString(),
+      ...task.project.collaborators.map((c) => c._id.toString()),
+    ];
+
+    if (!authorizedUserIds.includes(assignedTo.toString())) {
+      throw new Error("L'utilisateur assigné n'a pas accès à ce projet");
+    }
+  }
+
+  // 3. Modifie directement l'objet task
+  if (title !== undefined) task.title = title;
+  if (description !== undefined) task.description = description;
+  if (assignedTo !== undefined) task.assignedTo = assignedTo;
+
+  // 4. Sauvegarder et populer
+  await task.save();
+  await task.populate(["user", "assignedTo"]);
+
+  return task;
+};
