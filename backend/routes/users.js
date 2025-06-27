@@ -25,7 +25,15 @@ router.post(
   async (req, res) => {
     try {
       const result = await userController.registerUser(req.body);
-      return res.status(201).json(result);
+      return res
+        .status(201)
+        .cookie("auth_token", result.token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "Strict",
+          maxAge: 3600000,
+        })
+        .json(result.user);
     } catch (error) {
       return res.status(500).json({ error: error.message });
     }
@@ -39,7 +47,15 @@ router.post(
   async (req, res) => {
     try {
       const result = await userController.loginUser(req.body);
-      return res.status(200).json(result);
+      return res
+        .status(200)
+        .cookie("auth_token", result.token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "Strict",
+          maxAge: 3600000,
+        })
+        .json(result.user);
     } catch (error) {
       return res.status(500).json({ error: error.message });
     }
