@@ -29,7 +29,7 @@ router.get("/all", authenticateToken, async (req, res) => {
   try {
     const userId = req.user.userId;
     const projects = await projectController.getAllProjects(userId);
-    return res.status(200).json(projects);
+    return res.status(200).json({ projects });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }

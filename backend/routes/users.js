@@ -18,6 +18,12 @@ router.get("/", requireAuth, async (req, res) => {
   }
 });
 
+router.get("/check-cookie", authenticateToken, (req, res) => {
+  if (req.user)
+    return res.status(200).json({ authenticated: true, user: req.user });
+  return res.status(401).json({ authenticated: false });
+});
+
 router.post(
   "/register",
   registerValidations,
@@ -30,7 +36,7 @@ router.post(
         .cookie("auth_token", result.token, {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
-          sameSite: "Strict",
+          sameSite: "lax",
           maxAge: 3600000,
         })
         .json(result.user);
@@ -52,7 +58,7 @@ router.post(
         .cookie("auth_token", result.token, {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
-          sameSite: "Strict",
+          sameSite: "lax",
           maxAge: 3600000,
         })
         .json(result.user);

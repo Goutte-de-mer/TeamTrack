@@ -11,7 +11,7 @@ const authenticateToken = (req, res, next) => {
     if (err) {
       return res.status(403).json({ error: "Token invalide" });
     }
-    req.user = user; // Stocke les infos du token dans req.user
+    req.user = user;
     next();
   });
 };

@@ -31,12 +31,14 @@ exports.registerUser = async ({ userName, email, password }) => {
 exports.loginUser = async ({ email, password }) => {
   const user = await User.findOne({ email }).select("+password");
 
-  if (!user) throw new Error("Identifiants invalides");
+  if (!user)
+    return res.status(401).json({ error: "Email ou mot de passe incorrect" });
 
   const isValidPassword = await bcrypt.compare(password, user.password);
 
   if (!isValidPassword) {
-    throw new Error("Email ou mot de passe incorrect");
+    return res.status(401).json({ error: "Email ou mot de passe incorrect" });
+    // throw new Error("Email ou mot de passe incorrect");
   }
 
   const token = generateToken(user._id, user.userName);
