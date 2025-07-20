@@ -1,0 +1,189 @@
+<template>
+  <NuxtLayout name="dashboard">
+    <template #header-title>{{ project.title || "Chargement..." }}</template>
+    <template #header-actions>
+      <Modal>
+        <template #default="{ open }">
+          <button
+            class="bg-light-green hover:bg-green flex h-8 w-9 cursor-pointer items-center justify-center rounded-full text-nowrap text-white transition active:scale-95 md:h-auto md:w-auto md:flex-nowrap md:gap-x-2 md:rounded-md md:px-3.5 md:py-2.5"
+            @click="open"
+          >
+            <Icon name="heroicons:plus-circle" class="text-xl" />
+            <span class="hidden md:inline">Nouvelle tâche</span>
+          </button>
+        </template>
+        <template #content="{ close }">
+          <NewTaskForm
+            :project="project"
+            :close="close"
+            @task-created="fetchTasks"
+          />
+        </template>
+      </Modal>
+    </template>
+
+    <div v-if="errorMessage">
+      <p class="error">{{ errorMessage }}</p>
+    </div>
+    <!-- Collaborateurs : {{ project.collaborators?.length }}
+    <div>
+      <p v-for="collaborator in project.collaborators">
+        {{ collaborator.userName }}
+      </p>
+    </div> -->
+
+    <div class="mb-7 grid max-w-md grid-cols-[1fr_auto] items-center gap-x-3.5">
+      <Combobox
+        v-model="selected"
+        :items="users"
+        placeholder="Ajouter un collaborateur"
+        displayField="userName"
+        keyField="_id"
+      />
+      <button
+        class="hover:bg-green bg-light-green cursor-pointer rounded-sm p-1.5 text-white transition active:scale-90"
+      >
+        <CheckIcon class="size-5" />
+      </button>
+    </div>
+
+    <TabGroup>
+      <!-- Onglets -->
+      <TabList class="mb-6 flex w-fit space-x-4 rounded-md bg-[#fdfdfd] p-1">
+        <Tab
+          v-for="status in statuses"
+          :key="status"
+          as="template"
+          v-slot="{ selected }"
+        >
+          <button
+            class="cursor-pointer rounded-md px-4 py-2 transition focus-visible:outline-0"
+            :class="
+              selected
+                ? 'bg-green font-semibold text-white'
+                : 'text-gray-700 hover:text-black'
+            "
+          >
+            {{ status }} ({{ tasksByStatus[status]?.length || 0 }})
+          </button>
+        </Tab>
+      </TabList>
+
+      <!-- Contenu par statut -->
+      <TabPanels>
+        <TabPanel
+          v-for="status in statuses"
+          :key="status"
+          class="focus:outline-none"
+        >
+          <ul class="space-y-4">
+            <li
+              v-if="!tasksByStatus[status]?.length"
+              class="text-gray-500 italic"
+            >
+              {{ loading ? "Chargement..." : "Aucune tâche" }}
+            </li>
+            <TaskItem
+              v-for="task in tasksByStatus[status]"
+              :key="task._id"
+              :task="task"
+              :statuses
+              @status-changed="updateTaskStatus"
+            />
+          </ul>
+        </TabPanel>
+      </TabPanels>
+    </TabGroup>
+  </NuxtLayout>
+</template>
+
+<script setup>
+import { getProjectById, getUsers, updateProject } from "~/api";
+import { TabGroup, TabList, Tab, TabPanels, TabPanel } from "@headlessui/vue";
+import { CheckIcon } from "@heroicons/vue/24/outline";
+
+const userStore = useUserStore();
+const route = useRoute();
+const loading = ref(true);
+const errorMessage = ref(null);
+const project = ref({});
+const tasks = ref([]);
+const users = ref([]);
+const statuses = ["À faire", "En cours", "Terminé"];
+let selected = ref(null);
+
+watch(selected, (newUser) => {
+  if (!newUser) return;
+
+  if (!updateProjectFormData.collaborators.includes(newUser._id)) {
+    updateProjectFormData.collaborators.push(newUser._id);
+  }
+
+  selected.value = null;
+  console.log(updateProjectFormData.collaborators);
+});
+
+const updateProjectFormData = reactive({
+  projectId: project._id,
+  title: "",
+  description: "",
+  collaborators: [],
+});
+
+const getAllUsers = async () => {
+  if (userStore?.user.userId != project.value.owner._id) {
+    return;
+  }
+  const res = await getUsers();
+  if (res.ok) {
+    const data = await res.json();
+    const collaboratorIds = project.value.collaborators.map((c) => c._id);
+    const ownerId = project.value.owner._id;
+    users.value = data.filter((user) => {
+      return user._id !== ownerId && !collaboratorIds.includes(user._id);
+    });
+  }
+};
+onMounted(async () => {
+  loading.value = true;
+  try {
+    const response = await getProjectById(route.params.id);
+    if (response.ok) {
+      const data = await response.json();
+      if (data.project) {
+        project.value = data.project;
+        tasks.value = data.tasks;
+        updateProjectFormData.collaborators =
+          data.project.collaborators?.map((u) => u._id) || [];
+        getAllUsers();
+      } else {
+        navigateTo("/");
+      }
+    }
+  } catch (error) {
+    errorMessage.value = "Problème est survenu, veuillez réessayer";
+    console.log("erreur :", error);
+  } finally {
+    loading.value = false;
+  }
+});
+
+const fetchTasks = async () => {
+  const response = await getProjectById(route.params.id);
+  const data = await response.json();
+  tasks.value = data.tasks;
+};
+
+const tasksByStatus = computed(() => {
+  return tasks.value.reduce((acc, task) => {
+    if (!acc[task.status]) acc[task.status] = [];
+    acc[task.status].push(task);
+    return acc;
+  }, {});
+});
+
+const updateTaskStatus = ({ taskId, newStatus }) => {
+  const task = tasks.value.find((t) => t._id === taskId);
+  if (task) task.status = newStatus;
+};
+</script>

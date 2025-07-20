@@ -48,3 +48,69 @@ export async function registerUser(userData) {
     throw error;
   }
 }
+
+export async function getProjects() {
+  const response = await fetch(`${BASE_URL}/projects/all`, {
+    credentials: "include",
+  });
+  return response;
+}
+
+export async function logoutUser() {
+  const response = await fetch("/api/users/logout", {
+    method: "POST",
+    credentials: "include",
+  });
+
+  return response;
+}
+
+export async function getProjectById(projectId) {
+  const response = await fetch(`/api/projects/${projectId}`, {
+    credentials: "include",
+  });
+  return response;
+}
+
+export async function createTask(formData) {
+  const response = await fetch("/api/tasks/new", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(formData),
+  });
+  return response;
+}
+
+export async function updateTaskStatus(data) {
+  const response = await fetch("/api/tasks/update/status", {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(data),
+  });
+  return response;
+}
+
+export async function getUsers() {
+  const response = await fetch("/api/users", {
+    credentials: "include",
+  });
+  return response;
+}
+
+export async function updateProject(data) {
+  const response = await fetch("/api/projects/update", {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(data),
+  });
+  return response;
+}

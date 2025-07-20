@@ -68,6 +68,17 @@ router.post(
   }
 );
 
+router.post("/logout", (req, res) => {
+  res.clearCookie("auth_token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production", // à adapter si t'es en HTTP local
+    sameSite: "lax",
+    path: "/",
+  });
+
+  res.status(200).json({ message: "Logged out" });
+});
+
 router.patch(
   "/update",
   authenticateToken,

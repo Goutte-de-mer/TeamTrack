@@ -50,11 +50,9 @@ const handleLogin = async () => {
 
   try {
     const result = await loginUser(formData);
-    console.log(result);
     if (!result.success) {
       error.value = result.message;
     } else {
-      console.log(result.success);
       navigateTo("/dashboard");
       // window.location.href = "/dashboard";
     }
