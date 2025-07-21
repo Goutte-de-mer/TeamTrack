@@ -41,11 +41,11 @@
         />
         <button
           type="button"
-          class="hover:bg-green bg-light-green h-fit cursor-pointer rounded-sm p-1.5 text-white transition active:scale-90"
+          class="hover:bg-green bg-light-green h-fit cursor-pointer rounded-sm p-0.5 text-white transition active:scale-90"
           @click="addCollaborator"
           :disabled="!selected"
         >
-          <CheckIcon class="size-5" />
+          <PlusIcon class="size-5" />
         </button>
       </div>
     </div>
@@ -70,7 +70,7 @@
 </template>
 
 <script setup>
-import { CheckIcon, XMarkIcon } from "@heroicons/vue/20/solid";
+import { CheckIcon, XMarkIcon, PlusIcon } from "@heroicons/vue/20/solid";
 import { reactive } from "vue";
 import { createProject, getUsers } from "~/api";
 

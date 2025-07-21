@@ -1,6 +1,6 @@
 <template>
   <aside
-    class="fixed top-0 z-50 flex h-screen min-w-3xs flex-col border-r-2 border-slate-200 bg-white p-5 shadow-lg transition-transform duration-500 md:sticky md:shadow-none"
+    class="absolute top-0 flex h-screen min-w-3xs flex-col border-r-2 border-slate-200 bg-white p-5 shadow-lg transition-transform duration-500 md:translate-x-0"
     :class="[isOpen ? 'translate-x-0' : '-translate-x-full']"
   >
     <div
@@ -8,8 +8,7 @@
       class="relative border-b-3 border-slate-200 px-3 pb-2.5 font-medium text-slate-400"
     >
       <button
-        v-if="isOpen"
-        class="absolute -top-4 -right-3 block cursor-pointer p-2 md:hidden"
+        class="absolute -top-4 -right-3 cursor-pointer p-2"
         @click="isOpen = false"
       >
         <XMarkIcon class="size-5 text-black" />
@@ -67,8 +66,8 @@ const userStore = useUserStore();
 const route = useRoute();
 const errorMessage = ref("");
 
-const isOpen = defineModel("open", { default: false });
 const isActive = (path) => route.path === path;
+const isOpen = defineModel("open", { default: false });
 const menuItems = [
   {
     name: "Tableau de bord",
