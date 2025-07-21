@@ -4,8 +4,8 @@
   >
     <p class="font-semibold">{{ task.title }}</p>
     <p class="flex items-center gap-x-3 sm:justify-center">
-      <UserIcon class="size-6" />
-      <span class="font-medium">{{ task.assignedTo.userName }}</span>
+      <UserIcon class="size-5" />
+      <span class="text-sm font-medium">{{ task.assignedTo.userName }}</span>
     </p>
     <div class="flex items-center gap-x-2.5">
       <Listbox v-model="selectedStatus" @update:modelValue="handleStatusChange">

@@ -2,24 +2,34 @@
   <NuxtLayout name="dashboard">
     <template #header-title>{{ project.title || "Chargement..." }}</template>
     <template #header-actions>
-      <Modal>
-        <template #default="{ open }">
-          <button
-            class="bg-light-green hover:bg-green flex h-8 w-9 cursor-pointer items-center justify-center rounded-full text-nowrap text-white transition active:scale-95 md:h-auto md:w-auto md:flex-nowrap md:gap-x-2 md:rounded-md md:px-3.5 md:py-2.5"
-            @click="open"
-          >
-            <Icon name="heroicons:plus-circle" class="text-xl" />
-            <span class="hidden md:inline">Nouvelle tâche</span>
-          </button>
-        </template>
-        <template #content="{ close }">
-          <NewTaskForm
-            :project="project"
-            :close="close"
-            @task-created="refreshTasks"
-          />
-        </template>
-      </Modal>
+      <div class="flex gap-3">
+        <button
+          v-if="userStore.user.userId === project?.owner?._id"
+          class="flex h-8 w-9 cursor-pointer items-center justify-center rounded-full bg-slate-200 text-nowrap transition hover:bg-slate-300 active:scale-95 md:h-auto md:w-auto md:flex-nowrap md:gap-x-2 md:rounded-md md:px-3.5 md:py-2.5"
+          @click="removeProject"
+        >
+          <TrashIcon class="size-5" />
+          <span class="hidden md:inline">Supprimer</span>
+        </button>
+        <Modal>
+          <template #default="{ open }">
+            <button
+              class="bg-light-green hover:bg-green flex h-8 w-9 cursor-pointer items-center justify-center rounded-full text-nowrap text-white transition active:scale-95 md:h-auto md:w-auto md:flex-nowrap md:gap-x-2 md:rounded-md md:px-3.5 md:py-2.5"
+              @click="open"
+            >
+              <Icon name="heroicons:plus-circle" class="text-xl" />
+              <span class="hidden md:inline">Nouvelle tâche</span>
+            </button>
+          </template>
+          <template #content="{ close }">
+            <NewTaskForm
+              :project="project"
+              :close="close"
+              @task-created="refreshTasks"
+            />
+          </template>
+        </Modal>
+      </div>
     </template>
 
     <div v-if="errorMessage">
@@ -54,6 +64,7 @@
           >
             <span class="text-sm">{{ user.userName }}</span>
             <button
+              v-if="userStore.user.userId === project?.owner?._id"
               @click="removeCollaborator(user._id)"
               class="cursor-pointer"
             >
@@ -117,9 +128,14 @@
 </template>
 
 <script setup>
-import { getProjectById, getUsers, updateProjectInfos } from "~/api";
+import {
+  getProjectById,
+  getUsers,
+  updateProjectInfos,
+  deleteProject,
+} from "~/api";
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from "@headlessui/vue";
-import { CheckIcon, XMarkIcon } from "@heroicons/vue/24/outline";
+import { CheckIcon, XMarkIcon, TrashIcon } from "@heroicons/vue/24/outline";
 
 const userStore = useUserStore();
 const route = useRoute();
@@ -239,5 +255,17 @@ const removeCollaborator = async (collaboratorId) => {
 const updateTaskStatus = ({ taskId, newStatus }) => {
   const task = tasks.value.find((t) => t._id === taskId);
   if (task) task.status = newStatus;
+};
+
+const removeProject = async () => {
+  try {
+    const res = await deleteProject(project.value._id);
+    if (res.ok) {
+      navigateTo("/dashboard");
+    }
+  } catch (error) {
+    console.error("Erreur lors de la suppression :", error);
+    message.value = "Impossible de contacter le serveur.";
+  }
 };
 </script>
