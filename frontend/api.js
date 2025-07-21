@@ -1,8 +1,6 @@
-const BASE_URL = "http://localhost:3001";
-
 export async function loginUser(userData) {
   try {
-    const response = await fetch(`${BASE_URL}/users/login`, {
+    const response = await fetch(`/api/users/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -28,7 +26,7 @@ export async function loginUser(userData) {
 
 export async function registerUser(userData) {
   try {
-    const response = await fetch(`${BASE_URL}/users/register`, {
+    const response = await fetch(`/api/users/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -50,7 +48,7 @@ export async function registerUser(userData) {
 }
 
 export async function getProjects() {
-  const response = await fetch(`${BASE_URL}/projects/all`, {
+  const response = await fetch(`/api/projects/all`, {
     credentials: "include",
   });
   return response;

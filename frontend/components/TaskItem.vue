@@ -8,7 +8,7 @@
       <span class="text-sm font-medium">{{ task.assignedTo.userName }}</span>
     </p>
     <div class="flex items-center gap-x-2.5">
-      <Listbox v-model="selectedStatus" @update:modelValue="handleStatusChange">
+      <Listbox @update:modelValue="handleStatusChange">
         <div class="relative mt-1 w-full">
           <ListboxButton
             :disabled="isUpdating"

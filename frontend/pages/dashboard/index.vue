@@ -14,11 +14,7 @@
           </button>
         </template>
         <template #content="{ close }">
-          <NewProjectForm
-            :project="project"
-            :close="close"
-            @project-created="refreshProjects"
-          />
+          <NewProjectForm :close="close" @project-created="refreshProjects" />
         </template>
       </Modal>
     </template>

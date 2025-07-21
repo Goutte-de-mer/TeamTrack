@@ -68,13 +68,18 @@ const handleSubmit = async () => {
   if (!formData.title) {
     return (error.value = "Le titre est obligatoire");
   }
+  if (formData.title.length < 3 || formData.title.length > 50) {
+    return (error.value = "Le titre doit contenir entre 3 et 50 caractères");
+  }
   error.value = "";
   isLoading.value = true;
 
   try {
     const response = await createTask(formData);
     if (!response.ok) {
-      error.value = response.error;
+      const data = await response.json();
+      console.log(data.error);
+      error.value = "Une erreur est survenue";
     } else {
       close();
       emit("task-created");

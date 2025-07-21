@@ -1,5 +1,5 @@
 <template>
-  <div class="flex min-h-screen items-center justify-center">
+  <div class="flex min-h-screen flex-col items-center justify-center">
     <p v-if="error" class="mb-2.5 font-medium text-red-400">{{ error }}</p>
     <form
       @submit.prevent="handleRegister"
@@ -57,6 +57,15 @@ const formData = reactive({
 const handleRegister = async () => {
   if (!validateAllFields(formData)) {
     return (error.value = "Tous les champs sont obligatoires");
+  }
+  const usernameRegex = /^[A-Za-z0-9_\-\s]+$/;
+  if (!usernameRegex.test(formData.userName)) {
+    return (error.value =
+      "Le nom d'utilisateur ne peut pas contenir d'accent. Seulement lettres, chiffres, _, espace et -");
+  }
+  if (formData.userName.length < 3 || formData.userName.length > 20) {
+    return (error.value =
+      "Le nom d'utilisateur doit contenir entre 3 et 20 caractères");
   }
   error.value = "";
   isLoading.value = true;
