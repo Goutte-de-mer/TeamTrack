@@ -17,7 +17,7 @@
         </h1>
         <slot name="header-actions" />
       </header>
-      <div class="flex-1 bg-[#f6f6f6] px-10 py-5">
+      <div class="flex-1 bg-[#f6f6f6] px-5 py-5 sm:px-10">
         <slot />
       </div>
     </div>

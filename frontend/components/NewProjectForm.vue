@@ -24,7 +24,7 @@
       </div>
       <p v-else class="text-sm text-slate-400 italic">Aucun collaborateur</p>
     </div>
-    <div class="flex gap-x-8">
+    <div class="grid grid-cols-1 gap-8 sm:grid-cols-2">
       <input
         type="text"
         placeholder="Titre"

@@ -5,27 +5,31 @@
       <p
         v-for="(value, key) in formData"
         :key="key"
-        class="flex items-center gap-x-2"
+        class="flex flex-wrap items-center gap-2 text-nowrap"
       >
-        {{ key === "userName" ? "Nom d'utilisateur" : "Email" }} :
+        <span class="text-green font-semibold">
+          {{ key === "userName" ? "Nom d'utilisateur" : "Email" }} :
+        </span>
         <template v-if="editingFields[key]">
           <input
             v-model="formData[key]"
             class="input max-w-[200px]"
             :type="key === 'userName' ? 'text' : 'email'"
           />
-          <button
-            class="cursor-pointer p-1 text-green-400 transition hover:text-green-500 active:scale-90"
-            @click="saveField(key)"
-          >
-            <CheckIcon class="size-5" />
-          </button>
-          <button
-            class="cursor-pointer p-1 text-red-400 transition hover:text-red-500 active:scale-90"
-            @click="cancelEdit(key)"
-          >
-            <XMarkIcon class="size-5" />
-          </button>
+          <div>
+            <button
+              class="cursor-pointer p-1 text-green-400 transition hover:text-green-500 active:scale-90"
+              @click="saveField(key)"
+            >
+              <CheckIcon class="size-5" />
+            </button>
+            <button
+              class="cursor-pointer p-1 text-red-400 transition hover:text-red-500 active:scale-90"
+              @click="cancelEdit(key)"
+            >
+              <XMarkIcon class="size-5" />
+            </button>
+          </div>
         </template>
         <template v-else>
           <span class="w-full max-w-[200px] rounded-md bg-white px-2.5 py-1">{{

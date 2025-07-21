@@ -39,12 +39,10 @@ const error = ref("");
 const isLoading = ref(false);
 
 const handleLogin = async () => {
-  // Validation des champs
   if (!validateAllFields(formData)) {
     return (error.value = "Tous les champs sont obligatoires");
   }
 
-  // Réinitialiser l'erreur et activer l'état de chargement
   error.value = "";
   isLoading.value = true;
 
@@ -54,10 +52,8 @@ const handleLogin = async () => {
       error.value = result.message;
     } else {
       navigateTo("/dashboard");
-      // window.location.href = "/dashboard";
     }
   } catch (err) {
-    // En théorie, loginUser ne throw plus, mais au cas où
     error.value = "Une erreur inattendue est survenue.";
     console.error(err);
   } finally {
