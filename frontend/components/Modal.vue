@@ -26,7 +26,7 @@
               leave-to="opacity-0 scale-95"
             >
               <DialogPanel
-                class="relative w-full max-w-lg transform rounded-lg bg-white p-6 shadow-xl"
+                class="relative w-full max-w-xl transform rounded-lg bg-white p-6 shadow-xl"
               >
                 <button
                   @click="open = false"

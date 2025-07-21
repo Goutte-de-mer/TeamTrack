@@ -72,6 +72,18 @@ export async function getProjectById(projectId) {
   return response;
 }
 
+export async function createProject(formData) {
+  const response = await fetch("/api/projects/new", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(formData),
+  });
+  return response;
+}
+
 export async function createTask(formData) {
   const response = await fetch("/api/tasks/new", {
     method: "POST",
@@ -103,7 +115,7 @@ export async function getUsers() {
   return response;
 }
 
-export async function updateProject(data) {
+export async function updateProjectInfos(data) {
   const response = await fetch("/api/projects/update", {
     method: "PATCH",
     headers: {

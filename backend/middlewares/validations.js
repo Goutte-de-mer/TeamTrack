@@ -152,7 +152,7 @@ const createTaskValidations = [
   body("description")
     .optional()
     .trim()
-    .isLength({ min: 1, max: 500 })
+    .isLength({ max: 500 })
     .withMessage("La description doit contenir entre 1 et 500 caractères")
     .escape(),
   body("assignedTo")

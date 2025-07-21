@@ -1,18 +1,31 @@
 <template>
   <NuxtLayout name="dashboard">
-    <template #header-title>Projects</template>
+    <template #header-title>Projets</template>
 
     <template #header-actions>
-      <button
-        class="bg-light-green hover:bg-green flex items-center gap-x-2 rounded-md px-3.5 py-2.5 text-white transition"
-      >
-        <Icon name="heroicons:plus-circle" class="text-xl" /> Nouveau projet
-      </button>
+      <Modal>
+        <template #default="{ open }">
+          <button
+            class="bg-light-green hover:bg-green flex h-8 w-9 cursor-pointer items-center justify-center rounded-full text-nowrap text-white transition active:scale-95 md:h-auto md:w-auto md:flex-nowrap md:gap-x-2 md:rounded-md md:px-3.5 md:py-2.5"
+            @click="open"
+          >
+            <Icon name="heroicons:plus-circle" class="text-xl" />
+            <span class="hidden md:inline">Nouveau projet</span>
+          </button>
+        </template>
+        <template #content="{ close }">
+          <NewProjectForm
+            :project="project"
+            :close="close"
+            @project-created="refreshProjects"
+          />
+        </template>
+      </Modal>
     </template>
 
     <p v-if="loading">Chargement des projets...</p>
 
-    <!-- PROJETS LISTE -->
+    <!-- LISTE PROJETS -->
     <ul
       v-else-if="projects.length > 0"
       class="grid auto-rows-fr grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
@@ -52,7 +65,7 @@ const projects = ref([]);
 const loading = ref(true);
 const errorMessage = ref(null);
 
-onMounted(async () => {
+const fetchProjects = async () => {
   loading.value = true;
   try {
     const response = await getProjects();
@@ -70,5 +83,13 @@ onMounted(async () => {
   } finally {
     loading.value = false;
   }
+};
+
+onMounted(async () => {
+  await fetchProjects();
 });
+
+const refreshProjects = async () => {
+  await fetchProjects();
+};
 </script>

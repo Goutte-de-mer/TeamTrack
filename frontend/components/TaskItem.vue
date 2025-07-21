@@ -69,7 +69,10 @@
       {{ message }}
     </p>
 
-    <p class="rounded-md bg-gray-100 px-4 py-2 sm:col-span-3">
+    <p
+      v-if="task.description"
+      class="rounded-md bg-gray-100 px-4 py-2 sm:col-span-3"
+    >
       {{ task.description }}
     </p>
   </li>

@@ -16,7 +16,7 @@
           <NewTaskForm
             :project="project"
             :close="close"
-            @task-created="fetchTasks"
+            @task-created="refreshTasks"
           />
         </template>
       </Modal>
@@ -25,26 +25,44 @@
     <div v-if="errorMessage">
       <p class="error">{{ errorMessage }}</p>
     </div>
-    <!-- Collaborateurs : {{ project.collaborators?.length }}
-    <div>
-      <p v-for="collaborator in project.collaborators">
-        {{ collaborator.userName }}
-      </p>
-    </div> -->
 
-    <div class="mb-7 grid max-w-md grid-cols-[1fr_auto] items-center gap-x-3.5">
-      <Combobox
-        v-model="selected"
-        :items="users"
-        placeholder="Ajouter un collaborateur"
-        displayField="userName"
-        keyField="_id"
-      />
-      <button
-        class="hover:bg-green bg-light-green cursor-pointer rounded-sm p-1.5 text-white transition active:scale-90"
+    <div class="mb-7 flex w-full flex-col justify-between gap-3 sm:flex-row">
+      <div
+        v-if="userStore.user.userId === project?.owner?._id"
+        class="grid w-full max-w-md grid-cols-[1fr_auto] items-center gap-x-3.5"
       >
-        <CheckIcon class="size-5" />
-      </button>
+        <Combobox
+          v-model="selected"
+          :items="users"
+          placeholder="Ajouter un collaborateur"
+          displayField="userName"
+          keyField="_id"
+        />
+        <button
+          class="hover:bg-green bg-light-green cursor-pointer rounded-sm p-1.5 text-white transition active:scale-90"
+          @click="addCollaborator"
+        >
+          <CheckIcon class="size-5" />
+        </button>
+      </div>
+      <Popover>
+        <div v-if="project.collaborators?.length > 0" class="space-y-3">
+          <div
+            v-for="user in project.collaborators"
+            :key="user._id"
+            class="flex w-fit items-center justify-between gap-x-3 rounded-md bg-slate-200 px-3 py-1.5"
+          >
+            <span class="text-sm">{{ user.userName }}</span>
+            <button
+              @click="removeCollaborator(user._id)"
+              class="cursor-pointer"
+            >
+              <XMarkIcon class="size-4" />
+            </button>
+          </div>
+        </div>
+        <p v-else class="text-sm text-gray-500 italic">Aucun collaborateur</p>
+      </Popover>
     </div>
 
     <TabGroup>
@@ -98,9 +116,9 @@
 </template>
 
 <script setup>
-import { getProjectById, getUsers, updateProject } from "~/api";
+import { getProjectById, getUsers, updateProjectInfos } from "~/api";
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from "@headlessui/vue";
-import { CheckIcon } from "@heroicons/vue/24/outline";
+import { CheckIcon, XMarkIcon } from "@heroicons/vue/24/outline";
 
 const userStore = useUserStore();
 const route = useRoute();
@@ -115,18 +133,15 @@ let selected = ref(null);
 watch(selected, (newUser) => {
   if (!newUser) return;
 
-  if (!updateProjectFormData.collaborators.includes(newUser._id)) {
-    updateProjectFormData.collaborators.push(newUser._id);
+  if (!collaboratorsFormData.collaborators.includes(newUser._id)) {
+    collaboratorsFormData.collaborators.push(newUser._id);
   }
 
   selected.value = null;
-  console.log(updateProjectFormData.collaborators);
 });
 
-const updateProjectFormData = reactive({
-  projectId: project._id,
-  title: "",
-  description: "",
+const collaboratorsFormData = reactive({
+  projectId: "",
   collaborators: [],
 });
 
@@ -152,10 +167,13 @@ onMounted(async () => {
       const data = await response.json();
       if (data.project) {
         project.value = data.project;
+        console.log(project.value);
         tasks.value = data.tasks;
-        updateProjectFormData.collaborators =
+        collaboratorsFormData.collaborators =
           data.project.collaborators?.map((u) => u._id) || [];
-        getAllUsers();
+        collaboratorsFormData.projectId = data.project._id;
+
+        await getAllUsers();
       } else {
         navigateTo("/");
       }
@@ -168,10 +186,16 @@ onMounted(async () => {
   }
 });
 
-const fetchTasks = async () => {
+const refreshTasks = async () => {
   const response = await getProjectById(route.params.id);
   const data = await response.json();
   tasks.value = data.tasks;
+};
+
+const refreshCollaborators = async () => {
+  const response = await getProjectById(route.params.id);
+  const data = await response.json();
+  project.value = data.project;
 };
 
 const tasksByStatus = computed(() => {
@@ -181,6 +205,35 @@ const tasksByStatus = computed(() => {
     return acc;
   }, {});
 });
+
+const addCollaborator = async () => {
+  try {
+    const res = await updateProjectInfos(collaboratorsFormData);
+    if (res.ok) {
+      selected.value = null;
+      await getAllUsers();
+      await refreshCollaborators();
+    } else {
+      const data = await res.json();
+      console.log(data);
+    }
+  } catch (error) {}
+};
+
+const removeCollaborator = async (collaboratorId) => {
+  collaboratorsFormData.collaborators =
+    collaboratorsFormData.collaborators.filter((id) => id !== collaboratorId);
+
+  try {
+    const res = await updateProjectInfos(collaboratorsFormData);
+    if (res.ok) {
+      await refreshCollaborators();
+      await getAllUsers();
+    }
+  } catch (error) {
+    console.error("Erreur lors de la suppression:", error);
+  }
+};
 
 const updateTaskStatus = ({ taskId, newStatus }) => {
   const task = tasks.value.find((t) => t._id === taskId);

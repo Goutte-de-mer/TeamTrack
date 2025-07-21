@@ -97,7 +97,7 @@
 <script setup>
 import { CheckIcon } from "@heroicons/vue/20/solid";
 import { reactive } from "vue";
-import { validateAllFields } from "@/utils/validateForm";
+// import { validateAllFields } from "@/utils/validateForm";
 import { createTask } from "~/api";
 
 const { project, close } = defineProps({
@@ -124,8 +124,8 @@ const formData = reactive({
 });
 
 const handleSubmit = async () => {
-  if (!validateAllFields(formData)) {
-    return (error.value = "Tous les champs sont obligatoires");
+  if (!formData.title) {
+    return (error.value = "Le titre est obligatoire");
   }
   error.value = "";
   isLoading.value = true;

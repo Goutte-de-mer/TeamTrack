@@ -29,3 +29,7 @@
 .isActive {
   @apply bg-green pointer-events-none text-white;
 }
+
+button {
+  @apply focus-visible:outline-0;
+}
