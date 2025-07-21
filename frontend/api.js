@@ -126,3 +126,19 @@ export async function updateProjectInfos(data) {
   });
   return response;
 }
+
+export async function deleteTask(taskId) {
+  const response = await fetch(`/api/tasks/${taskId}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  return response;
+}
+
+export async function deleteProject(projectId) {
+  const response = await fetch(`/api/projects/${projectId}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  return response;
+}

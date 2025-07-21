@@ -107,6 +107,7 @@
               :task="task"
               :statuses
               @status-changed="updateTaskStatus"
+              @task-deleted="refreshTasks"
             />
           </ul>
         </TabPanel>
