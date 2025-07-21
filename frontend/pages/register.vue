@@ -63,16 +63,14 @@ const handleRegister = async () => {
 
   try {
     const result = await registerUser(formData);
-    console.log(result);
     if (!result.success) {
       error.value = result.message;
     } else {
       navigateTo("/dashboard");
     }
   } catch (err) {
-    // En théorie, loginUser ne throw plus, mais au cas où
     error.value = "Une erreur inattendue est survenue.";
-    console.error(err);
+    // console.error(err);
   } finally {
     isLoading.value = false;
   }

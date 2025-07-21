@@ -1,7 +1,7 @@
 <template>
   <main class="flex">
     <SideBar v-model:open="isMobileMenuOpen" />
-    <!-- <MobileNavbar v-model:open="isMobileMenuOpen" /> -->
+
     <div class="flex min-h-screen min-w-0 flex-1 flex-col">
       <header
         class="grid w-full grid-cols-[auto_1fr_auto] gap-x-3.5 px-10 py-6 md:grid-cols-[1fr_auto]"

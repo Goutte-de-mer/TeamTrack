@@ -105,8 +105,6 @@ const message = ref("");
 const isUpdating = ref(false);
 const userStore = useUserStore();
 
-console.log(task.user._id);
-
 const handleStatusChange = async (newStatus) => {
   isUpdating.value = true;
   message.value = "";

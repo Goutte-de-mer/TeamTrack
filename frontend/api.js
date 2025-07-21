@@ -142,3 +142,15 @@ export async function deleteProject(projectId) {
   });
   return response;
 }
+
+export async function updateUserInfos(formData) {
+  const response = await fetch("api/users/update", {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(formData),
+  });
+  return response;
+}

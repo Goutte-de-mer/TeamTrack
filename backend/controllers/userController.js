@@ -16,7 +16,7 @@ exports.registerUser = async ({ userName, email, password }) => {
     password: hashedPasswd,
   });
 
-  const token = generateToken(newUser._id, newUser.userName);
+  const token = generateToken(newUser._id, newUser.userName, newUser.email);
 
   return {
     user: {
@@ -41,7 +41,7 @@ exports.loginUser = async ({ email, password }) => {
     // throw new Error("Email ou mot de passe incorrect");
   }
 
-  const token = generateToken(user._id, user.userName);
+  const token = generateToken(user._id, user.userName, user.email);
 
   return {
     user: {
@@ -54,9 +54,22 @@ exports.loginUser = async ({ email, password }) => {
 };
 
 exports.updateUser = async (userName, email, userId) => {
+  // Récupère l'utilisateur actuel
+  const currentUser = await User.findById(userId);
+  if (!currentUser) throw new Error("Utilisateur non trouvé");
+
+  // Ne garde que les champs modifiés
   const updates = {};
-  if (userName !== undefined) updates.userName = userName;
-  if (email !== undefined) updates.email = email;
+  if (userName !== undefined && userName !== currentUser.userName) {
+    updates.userName = userName;
+  }
+  if (email !== undefined && email !== currentUser.email) {
+    updates.email = email;
+  }
+
+  if (Object.keys(updates).length === 0) {
+    return currentUser;
+  }
 
   const updatedUser = await User.findByIdAndUpdate(
     userId,

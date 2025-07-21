@@ -3,7 +3,7 @@
     <slot :open="() => (open = true)" />
 
     <TransitionRoot as="template" :show="open">
-      <Dialog class="relative z-10" @close="open = false">
+      <Dialog class="relative z-40" @close="open = false">
         <TransitionChild
           enter="ease-out duration-300"
           enter-from="opacity-0"

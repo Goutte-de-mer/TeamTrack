@@ -60,7 +60,7 @@ const updateValidations = [
     .custom(async (value, { req }) => {
       const user = await User.findOne({
         email: value,
-        _id: { $ne: req.user.id },
+        _id: { $ne: req.user.userId },
       });
       if (user) {
         throw new Error("Cet email est déjà pris");
@@ -78,7 +78,7 @@ const updateValidations = [
     .custom(async (value, { req }) => {
       const user = await User.findOne({
         userName: value,
-        _id: { $ne: req.user.id },
+        _id: { $ne: req.user.userId },
       });
       if (user) {
         throw new Error("Ce nom d'utilisateur est déjà pris");

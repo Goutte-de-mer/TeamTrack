@@ -184,7 +184,6 @@ onMounted(async () => {
       const data = await response.json();
       if (data.project) {
         project.value = data.project;
-        console.log(project.value);
         tasks.value = data.tasks;
         collaboratorsFormData.collaborators =
           data.project.collaborators?.map((u) => u._id) || [];
@@ -197,7 +196,7 @@ onMounted(async () => {
     }
   } catch (error) {
     errorMessage.value = "Problème est survenu, veuillez réessayer";
-    console.log("erreur :", error);
+    // console.log("erreur :", error);
   } finally {
     loading.value = false;
   }
@@ -231,8 +230,8 @@ const addCollaborator = async () => {
       await getAllUsers();
       await refreshCollaborators();
     } else {
-      const data = await res.json();
-      console.log(data);
+      // const data = await res.json();
+      // console.log(data);
     }
   } catch (error) {}
 };

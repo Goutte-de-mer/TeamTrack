@@ -86,7 +86,6 @@ const users = ref([]);
 
 onMounted(async () => {
   await getAllUsers();
-  console.log(users);
 });
 
 const formData = reactive({
